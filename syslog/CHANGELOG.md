@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.4
+
+- Change github URL
+
+## 0.4.3
+
+- Add print command before journal loop for debugging purpose
+
+## 0.4.2
+
+- Format logs to conform with RFC3164
+
 ## 0.4.1
 
 - Fix tagging of containers
