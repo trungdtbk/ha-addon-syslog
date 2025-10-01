@@ -16,5 +16,6 @@ HAOS_HOSTNAME=$(bashio::info.hostname)
 export HAOS_HOSTNAME
 
 # Run daemon
+bashio::log.info "HA Syslog Add-on: version $(bashio::addon.version)"
 bashio::log.info "Starting the daemon..."
 python3 /journal2syslog.py
