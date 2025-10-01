@@ -199,6 +199,7 @@ logger.addHandler(syslog_handler)
 last_container_log_level: dict[str, int] = {}
 
 # wait for new messages in journal
+print("Start searching for journal messages ...")
 while True:
     change = jr.wait(timeout=None)
     for entry in jr:
