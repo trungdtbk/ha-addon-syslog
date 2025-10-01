@@ -6,6 +6,7 @@ import re
 import socket
 import ssl
 from os import environ
+import time
 
 from systemd import journal
 
@@ -36,6 +37,38 @@ CONTAINER_PATTERN_MAPPING = {
     "hassio_supervisor": PATTERN_LOGLEVEL_HA,
 }
 
+class RFC3164Formatter(logging.Formatter):
+    def __init__(self, facility=logging.handlers.SysLogHandler.LOG_USER, tag="ha"):
+        super().__init__()
+        self.facility = facility
+        self.tag = tag
+        self.hostname = socket.gethostname()
+
+    def format(self, record):
+        # Priority (facility + severity)
+        severity = self.map_severity(record.levelno)
+        pri = self.facility * 8 + severity
+
+        # RFC 3164 timestamp format: Mmm dd hh:mm:ss
+        timestamp = time.strftime("%b %d %H:%M:%S", time.localtime(record.created))
+
+        msg = record.getMessage()
+        tag = getattr(record, "prog", self.tag)
+        return f"<{pri}>{timestamp} {self.hostname} {self.tag}: {msg}"
+
+    @staticmethod
+    def map_severity(levelno):
+        # Map Python logging levels to syslog severity
+        if levelno >= logging.CRITICAL:
+            return 2  # Critical
+        elif levelno >= logging.ERROR:
+            return 3  # Error
+        elif levelno >= logging.WARNING:
+            return 4  # Warning
+        elif levelno >= logging.INFO:
+            return 6  # Informational
+        else:
+            return 7  # Debug
 
 class TlsSysLogHandler(logging.handlers.SysLogHandler):
     def __init__(
@@ -159,11 +192,7 @@ if SYSLOG_SSL and not SYSLOG_SSL_VERIFY:
 syslog_handler = TlsSysLogHandler(
     address=(SYSLOG_HOST, SYSLOG_PORT), socktype=socktype, ssl=use_ssl
 )
-formatter = logging.Formatter(
-    f"%(asctime)s %(ip)s %(prog)s: %(message)s",
-    defaults={"ip": HAOS_HOSTNAME},
-    datefmt="%b %d %H:%M:%S",
-)
+formatter = RFC3164Formatter()
 syslog_handler.setFormatter(formatter)
 logger.addHandler(syslog_handler)
 
