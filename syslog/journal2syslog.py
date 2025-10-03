@@ -54,7 +54,7 @@ class RFC3164Formatter(logging.Formatter):
 
         msg = record.getMessage()
         tag = getattr(record, "prog", self.tag)
-        return f"<{pri}>{timestamp} {self.hostname} {self.tag}: {msg}"
+        return f"<{pri}>{timestamp} {self.hostname} {tag}: {msg} container={getattr(record, 'container', '')}"
 
     @staticmethod
     def map_severity(levelno):
@@ -224,6 +224,7 @@ while True:
             log_level = last_container_log_level.get(
                 container_name, LOGGING_DEFAULT_LEVEL
             )
-
+        
+        extra["container"] = container_name if container_name else ""
         # send syslog message
         logger.log(level=log_level, msg=msg, extra=extra)
