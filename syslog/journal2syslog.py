@@ -54,7 +54,7 @@ class RFC3164Formatter(logging.Formatter):
 
         msg = record.getMessage()
         tag = getattr(record, "prog", self.tag)
-        return f"<{pri}>{timestamp} {self.hostname} {tag}: {msg} container={getattr(record, 'container', '')}"
+        return f"<{pri}>{timestamp} {self.hostname} {tag}: message={msg}"
 
     @staticmethod
     def map_severity(levelno):

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.6
+
+- Make it friendly to Splunk, i.e. key=value
+
 ## 0.4.5
 
 - Add container name to log
