@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.5
+
+- Add container name to log
+
 ## 0.4.4
 
 - Change github URL
